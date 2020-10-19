@@ -1,4 +1,7 @@
 # The class create a self-defined multithrading server to receive from and send messages to clients
+import sys, os # to solve TimsStamp import problme
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 import socket
 import numpy as np
 from colorama import *

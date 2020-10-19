@@ -1,3 +1,6 @@
+import sys, os # to solve TimsStamp import problme
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 import socket
 from TimeStamp import TimeStamp
 from datetime import datetime, timedelta
