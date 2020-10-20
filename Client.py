@@ -23,15 +23,15 @@ class Client:
             self.Client_socket.connect((self.ip, self.port))
             time_connected = self.ts.datetime()
             
-            channel_name, server_TimeStamp, _ = self.recv()
+            self.channel_name, _, _ = self.recv()
             receive_time = self.ts.datetime()
 
-            self.channel_name = channel_name
+             # = channel_name
             print(f"[{self.ts.datetime()}][connect2Server] Connection to '{self.channel_name}' server is established at time {time_connected}")
             self.send(receive_time)
             rrt_start = datetime.now()
             
-            channel_name, server_TimeStamp, server_rrt = self.recv()
+            _, _, server_rrt = self.recv()
             print(f"[Client] server_rrt = {server_rrt}")
             self.rrt = (datetime.now() - rrt_start)/timedelta(milliseconds=1)
 
@@ -63,7 +63,7 @@ class Client:
             if len(msgs) >= 2:
                 msg = msgs[2:]
             print(f"[{self.ts.datetime()}][client] {msg}")
-            if channel_name != self.channel_name:
+            if self.channel_name is not None and channel_name != self.channel_name:
                 print(f"[{self.ts.datetime()}][client] Error: Receive from channel {channel_name}")
                 
             return channel_name, sent_time, msg
