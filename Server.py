@@ -71,64 +71,60 @@ class Server:
             print('\033[91m' + f"[{self.ts.time()}] Error when checking communication quality: {msg} ..." + '\033[39m')
             return False, None
 
-    def recv_detection(self, client_ip):
+    def recv(self, client_ip):
         '''
         recv+
         '''
-        # data = self.comm_dict[assigned_client_name].recv(128)
         commObj = self.comm_dict[client_ip]
         data = commObj.recv(128)
         server_min, server_sec, server_msec = self.ts.time(["minute", "second", "msec"])
         result = [None, (server_min, server_sec), None, None]
         if data: # if there is message sent by client
+
             client_msgs = str(data, 'utf-8').split('#')[:-1] # received and decode the message
             client_name = client_msgs[0]
             client_TimeStamp = client_msgs[1] # extract the local time of the server when sending message
             result[0] = client_name
             detect_result = client_msgs[2:]
-            # print(f"[{self.ts.time()}][recv_detection] {client_name} detect_result = {detect_result}")
-            if len(detect_result) == 2:
-                # print(f"[recv] client_TimeStamp = {client_TimeStamp}")
+
+            if len(detect_result) == 2: 
+            # which means there should be position and orientation info
+            # return [client_name, (server_min, server_sec), detect_position, detect_orientation]
+
+                ## convert the time the client send the message and the time server received the message
+                ## to seconds, then subtracting them to find the latency
                 # client_min = int(client_TimeStamp[-9:-7])
                 # client_sec = int(client_TimeStamp[-6:-4])
                 # client_msec = int(client_TimeStamp[-3:])
-                # print(f"[recv] (min, sec, msec) = ({client_min}, {client_sec}, {client_msec})")
-                # print(f"[{self.ts.time()}][recv_detection] {client_name}: {detect_position}, {detect_orientation}")
-                # convert the time the client send the message and the time server received the message
-                # to seconds, then subtracting them to find the latency
                 # client_t = (client_min*60 + client_sec)*1000 + client_msec
                 # server_t = (server_min*60 + server_sec)*1000 + server_msec
                 # latency = abs(client_t - server_t)
                 # if (latency - self.rrt/2) >= self.latency_threshold: # show in yellow string if the latency exceeds the threshold
                 #     print('\033[93m' +
-                #     f'[{self.ts.time()}][recv_detection] The conneciton delay to {client_name} is over {self.latency_threshold} second(s)'
+                #     f'[{self.ts.time()}][recv] The conneciton delay to {client_name} is over {self.latency_threshold} second(s)'
                 #     + '\033[39m')
-                    # result = [client_address[0], (server_min, server_sec), "late"]
-                    # result[2] = "late"
-                    # result[3] = "late"
-                # else:
+
                 detect_position, detect_orientation = detect_result[0], detect_result[1]
                 detect_position = np.fromstring(detect_position[1:-1], dtype=float, sep=" ")
-                result[2] = detect_position # coord is an np array
+                result[2] = detect_position
                 detect_orientation = np.fromstring(detect_orientation[1:-1], dtype=float, sep=" ")
-                result[3] = detect_orientation # coord is an np array
-                # will return [client_name, (server_min, server_sec), detect_position, detect_orientation]
+                result[3] = detect_orientation
 
             else:
-                # print(f"[{self.ts.time()}][recv_detection] No detect result")
+                # print(f"[{self.ts.time()}][recv] No detect result")
                 result[2] = detect_result 
-                # will return [client_name, (server_min, server_sec), "No marker detected", None]
-        else:
+
+        else: # return [None, (server_min, server_sec), None, None]
             print('\033[91m' +
-                  f'[{self.ts.time()}][recv_detection] The conneciton to has been closed'
+                  f'[{self.ts.time()}][recv] The conneciton to has been closed'
                   + '\033[39m')
-            # will return [None, (server_min, server_sec), None, None]
-        # print(f"[{self.ts.time()}][recv_detection] {client_name} result = {result}")
+        
+        # print(f"[{self.ts.time()}][recv] {client_name} result = {result}")
         return result
 
-    def send_instruction(self, message):
+    def send(self, message):
         msg2client = f"{self.channel_name}#{self.ts.time()}#{message}#".ljust(128, ' ')
-        print(f"[{self.ts.time()}][send_instruction] Send instruction {msg2client}")
+        print(f"[{self.ts.time()}][send] Send instruction {msg2client}")
         for client in self.comm_dict:
             self.comm_dict[client].send(bytes(msg2client, 'utf-8'))
 
