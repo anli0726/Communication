@@ -62,7 +62,10 @@ class Client:
             sent_time = msgs[1]
             if len(msgs) >= 2:
                 msg = msgs[2:]
+                if len(msg) == 1 and msg[0] == "END":
+                    msg = "END"
             print(f"[{self.ts.datetime()}][Client][recv] msg = {msg}")
+
             if self.channel_name is not None and channel_name != self.channel_name:
                 print(f"[{self.ts.datetime()}][Client][recv] Error: Receive from channel {channel_name}")
                 
