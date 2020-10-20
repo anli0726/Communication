@@ -62,8 +62,9 @@ class Client:
             sent_time = msgs[1]
             if len(msgs) >= 2:
                 msg = msgs[2:]
+            print(f"[{self.ts.datetime()}][client] {msg}")
             if channel_name != self.channel_name:
-                print(f"[client] Error: Receive from channel {msg}")
+                print(f"[{self.ts.datetime()}][client] Error: Receive from channel {channel_name}")
                 
             return channel_name, sent_time, msg
         else:
@@ -72,7 +73,7 @@ class Client:
     
     def close_connection(self):
         # self.Client_socket.sendall(bytes(f"{self.ts.datetime()}Connection closed from client", "utf-8"))
-        print(f"[{self.ts.datetime()}] Connection close notified")
+        print(f"[{self.ts.datetime()}][client] Connection close notified")
         self.Client_socket.close()
 
 if __name__ == "__main__":
