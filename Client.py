@@ -23,15 +23,15 @@ class Client:
             self.Client_socket.connect((self.ip, self.port))
             time_connected = self.ts.datetime()
             
-            channel_name, server_TimeStamp, _ = self.recv_test()
+            channel_name, server_TimeStamp, _ = self.recv()
             receive_time = self.ts.datetime()
 
             self.channel_name = channel_name
             print(f"[{self.ts.datetime()}][connect2Server] Connection to '{self.channel_name}' server is established at time {time_connected}")
-            self.send_test(receive_time)
+            self.send(receive_time)
             rrt_start = datetime.now()
             
-            channel_name, server_TimeStamp, server_rrt = self.recv_test()
+            channel_name, server_TimeStamp, server_rrt = self.recv()
             print(f"[Client] server_rrt = {server_rrt}")
             self.rrt = (datetime.now() - rrt_start)/timedelta(milliseconds=1)
 
