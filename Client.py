@@ -27,12 +27,12 @@ class Client:
             receive_time = self.ts.datetime()
 
              # = channel_name
-            print(f"[{self.ts.datetime()}][connect2Server] Connection to '{self.channel_name}' server is established at time {time_connected}")
+            print(f"[{self.ts.datetime()}][Client][connect2Server] Connection to '{self.channel_name}' server is established at time {time_connected}")
             self.send(receive_time)
             rrt_start = datetime.now()
             
             _, _, server_rrt = self.recv()
-            print(f"[Client] server_rrt = {server_rrt}")
+            print(f"[{self.ts.datetime()}][Client][connect2Server] server_rrt = {server_rrt}")
             self.rrt = (datetime.now() - rrt_start)/timedelta(milliseconds=1)
 
             self.connected = True
@@ -62,26 +62,26 @@ class Client:
             sent_time = msgs[1]
             if len(msgs) >= 2:
                 msg = msgs[2:]
-            print(f"[{self.ts.datetime()}][client] {msg}")
+            print(f"[{self.ts.datetime()}][Client][recv] msg = {msg}")
             if self.channel_name is not None and channel_name != self.channel_name:
-                print(f"[{self.ts.datetime()}][client] Error: Receive from channel {channel_name}")
+                print(f"[{self.ts.datetime()}][Client][recv] Error: Receive from channel {channel_name}")
                 
             return channel_name, sent_time, msg
         else:
-            print("[Client][recv] No raw data receive, return END...")
+            print(f"{self.ts.datetime()}][Client][recv] No raw data receive, return END...")
             return self.channel_name, None, "END"
     
     def close_connection(self):
-        # self.Client_socket.sendall(bytes(f"{self.ts.datetime()}Connection closed from client", "utf-8"))
-        print(f"[{self.ts.datetime()}][client] Connection close notified")
+        # self.Client_socket.sendall(bytes(f"{self.ts.datetime()}Connection closed from Client", "utf-8"))
+        print(f"[{self.ts.datetime()}][Client] Connection close notified")
         self.Client_socket.close()
 
 if __name__ == "__main__":
     host_ip = '192.168.1.147'
     port = 12345
-    client = Client(host_ip, port)
-    client.connect2Server()
+    Client = Client(host_ip, port)
+    Client.connect2Server()
     for i in range(10):
-        client.communication(f"{i} time send the message")
+        Client.communication(f"{i} time send the message")
         time.sleep(1)
-    client.close_connection()
+    Client.close_connection()
